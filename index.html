@@ -616,7 +616,7 @@ footer{padding:8rem 5vw 4rem;border-top:1px solid var(--glass-bdr);
 <footer>
   <div class="footer-brand bf">ST117</div>
   <div class="footer-links">
-    <a class="footer-link" href="mailto:contact@st117.studio">Email</a>
+    <a class="footer-link" href="/cdn-cgi/l/email-protection#8deee2e3f9eceef9cdfef9bcbcbaa3fef9f8e9e4e2">Email</a>
     <a class="footer-link" href="#" target="_blank">Instagram</a>
     <a class="footer-link" href="#" target="_blank">Behance</a>
   </div>
@@ -650,13 +650,12 @@ footer{padding:8rem 5vw 4rem;border-top:1px solid var(--glass-bdr);
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){
 'use strict';
 
 var OWNER='luranosmani024-ai';
-var REPO='ST117.github.io';
-
+var REPO='luranosmani024-ai.github.io';
 var CATS=[
   {id:'paintings', pvId:'pv-paintings', match:['painting','paintings'],
    subs:['Oil','Acrylic','Watercolor','Gouache','Mixed']},
@@ -778,7 +777,7 @@ function setSubChip(sub){
 }
 buildSubChips('paintings');
 
-/* LOAD */
+/* LOAD — use GitHub API (not raw CDN) so artworks appear immediately after publish */
 function loadAW(cb){
   var xhr=new XMLHttpRequest();
   xhr.open('GET',raw('artworks.json')+'?t='+Date.now());
@@ -951,14 +950,4 @@ function sendMsg(){
   var e=document.getElementById('cE').value.trim();
   var m=document.getElementById('cM').value.trim();
   if(!n||!e||!m){alert('Please fill in name, email and message.');return;}
-  document.getElementById('cformWrap').style.display='none';
-  document.getElementById('fOk').classList.add('show');
-}
-
-/* INIT */
-loadAW(function(aw){renderAll(aw);});
-
-})();
-</script>
-</body>
-</html>
+  document.getElementById('cformWrap').style.displa
