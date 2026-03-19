@@ -4,1051 +4,389 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>ST117 — Admin Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;700&family=Inter:wght@900&display=swap" rel="stylesheet"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#16151a;
-  --bg2:#1e1d22;
-  --bg3:#26242b;
-  --bg4:#2e2c34;
-  --ink:#eae6e0;
-  --ink-mid:#b0aba3;
-  --ink-soft:#68635d;
-  --red:#c8102e;
-  --red-h:#e01232;
-  --red-a:rgba(200,16,46,.13);
-  --green:#22c55e;
-  --green-a:rgba(34,197,94,.1);
-  --rule:rgba(255,255,255,.06);
-  --sidebar:240px;
+:root {
+  --bg: #08080a;
+  --bg-elevated: #111114;
+  --bg-card: #16161a;
+  --ink: #f8f6f2;
+  --ink-mid: #a19d96;
+  --ink-soft: #68635d;
+  --red: #c8102e;
+  --red-glow: rgba(200, 16, 46, 0.15);
+  --border: rgba(255, 255, 255, 0.08);
+  --radius: 12px;
 }
-html{height:100%;}
-body{background:var(--bg);color:var(--ink);font-family:'Syne',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'DM Sans', sans-serif;
+  min-height: 100vh; display: flex; flex-direction: column;
+}
 
 /* ── LOGIN ── */
-#loginScreen{
-  position:fixed;inset:0;z-index:9000;
-  background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2.5rem;padding:2rem;
+#loginScreen {
+  position:fixed; inset:0; z-index:9999; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 #loginScreen.gone{display:none;}
-.login-brand{text-align:center;}
-.login-brand .name{font-size:3rem;font-weight:800;letter-spacing:.06em;color:var(--red);}
-.login-brand .sub{font-family:'Syne Mono',monospace;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-soft);margin-top:.5rem;display:block;}
-.login-card{
-  width:100%;max-width:380px;
-  background:var(--bg2);border:1px solid var(--rule);
-  border-radius:12px;padding:2.5rem;
-}
-.login-card h2{font-size:1.1rem;font-weight:700;margin-bottom:.4rem;}
-.login-card p{font-size:.82rem;color:var(--ink-soft);margin-bottom:2rem;}
-.field-group{margin-bottom:1.5rem;}
-.field-group label{display:block;font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.6rem;}
-.field-group input{
-  width:100%;background:var(--bg3);border:1px solid var(--rule);
-  border-radius:8px;padding:.85rem 1rem;
-  font-family:'Syne',sans-serif;font-size:.95rem;color:var(--ink);
-  outline:none;transition:border-color .2s;
-}
-.field-group input:focus{border-color:var(--red);}
-.login-err{font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:var(--red);min-height:1rem;margin-bottom:.8rem;}
-.btn-login{
-  width:100%;padding:1rem;background:var(--red);color:#fff;
-  font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;
-  border:none;border-radius:8px;cursor:pointer;
-  transition:background .2s;
-}
-.btn-login:hover{background:var(--red-h);}
-.btn-login:disabled{opacity:.4;cursor:not-allowed;}
+.login-brand h1 { font-family: 'Inter', sans-serif; font-size: 4rem; color: var(--red); letter-spacing: -0.05em; margin-bottom: 2rem; }
+.login-card { width: 340px; background: var(--bg-card); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
+.login-card input { width: 100%; padding: 1rem; background: var(--bg-elevated); border: 1px solid var(--border); color: #fff; border-radius: 8px; margin: 1rem 0; outline: none; }
+.btn-prime { width: 100%; padding: 1rem; background: var(--red); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+.btn-prime:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ── APP SHELL ── */
-#app{display:none;min-height:100vh;}
-#app.on{display:flex;flex-direction:column;}
-
-/* ── TOPBAR ── */
-.topbar{
-  height:56px;padding:0 1.5rem;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--rule);
-  background:var(--bg);
-  position:sticky;top:0;z-index:200;flex-shrink:0;
-}
-.tb-left{display:flex;align-items:center;gap:1rem;}
-.burger{display:none;background:none;border:none;cursor:pointer;color:var(--ink-soft);padding:.3rem;-webkit-tap-highlight-color:transparent;}
-.burger svg{display:block;}
-.tb-brand{font-size:1.1rem;font-weight:800;letter-spacing:.05em;color:var(--red);}
-.tb-brand span{color:var(--ink-soft);font-weight:400;font-size:.9rem;margin-left:.4rem;}
-.tb-right{display:flex;align-items:center;gap:.8rem;}
-.tb-viewsite{
-  display:flex;align-items:center;gap:.4rem;
-  font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.15em;
-  text-transform:uppercase;color:var(--ink-soft);text-decoration:none;
-  padding:.45rem .9rem;border:1px solid var(--rule);border-radius:6px;
-  transition:all .2s;
-}
-.tb-viewsite:hover{color:var(--ink);border-color:rgba(255,255,255,.15);}
-.tb-logout{
-  background:none;border:1px solid var(--rule);color:var(--ink-soft);
-  font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.15em;
-  text-transform:uppercase;padding:.45rem .9rem;border-radius:6px;
-  cursor:pointer;transition:all .2s;
-}
-.tb-logout:hover{border-color:var(--red);color:var(--red);}
-
-/* ── MAIN LAYOUT ── */
-.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px);}
+/* ── LAYOUT ── */
+#app { display:none; min-height:100vh; flex-direction:column; }
+#app.on { display:flex; }
+.topbar { height: 70px; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 100; }
+.app-body { display: flex; flex: 1; height: calc(100vh - 70px); }
 
 /* ── SIDEBAR ── */
-.sidebar{
-  width:var(--sidebar);flex-shrink:0;
-  background:var(--bg2);
-  border-right:1px solid var(--rule);
-  display:flex;flex-direction:column;
-  overflow-y:auto;
-  transition:transform .3s ease;
+.sidebar { width: 260px; background: var(--bg-elevated); border-right: 1px solid var(--border); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.artist-profile-box { text-align: center; margin-bottom: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+.artist-avatar-circle {
+  width: 80px; height: 80px; border-radius: 50%; background: var(--bg-card);
+  margin: 0 auto 1rem; border: 2px solid var(--red); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
 }
-.sidebar-section{padding:1.5rem 1.2rem .5rem;}
-.sidebar-label{
-  font-family:'Syne Mono',monospace;font-size:.5rem;letter-spacing:.25em;
-  text-transform:uppercase;color:var(--ink-soft);
-  display:block;margin-bottom:.6rem;padding:0 .4rem;
-}
-.nav-item{
-  display:flex;align-items:center;gap:.7rem;
-  padding:.7rem .9rem;border-radius:8px;
-  font-size:.85rem;font-weight:500;color:var(--ink-soft);
-  cursor:pointer;transition:all .2s;border:none;background:none;
-  width:100%;text-align:left;-webkit-tap-highlight-color:transparent;
-}
-.nav-item svg{flex-shrink:0;opacity:.6;}
-.nav-item:hover{background:var(--bg3);color:var(--ink);}
-.nav-item:hover svg{opacity:1;}
-.nav-item.active{background:var(--red-a);color:var(--red);}
-.nav-item.active svg{opacity:1;}
-.sidebar-divider{height:1px;background:var(--rule);margin:.8rem 1.2rem;}
+.artist-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+.nav-btn { padding: 0.8rem 1rem; border: none; background: none; color: var(--ink-mid); text-align: left; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+.nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-btn.active { background: var(--red-glow); color: var(--red); font-weight: 700; }
 
-/* Profile card in sidebar */
-.profile-card{
-  margin:1rem 1.2rem 1.5rem;
-  background:var(--bg3);border:1px solid var(--rule);
-  border-radius:10px;padding:1.2rem;
-  display:flex;flex-direction:column;align-items:center;gap:.7rem;
-  cursor:pointer;transition:border-color .2s;
-}
-.profile-card:hover{border-color:rgba(200,16,46,.3);}
-.profile-avatar{
-  width:64px;height:64px;border-radius:50%;
-  background:var(--bg4);border:2px solid var(--rule);
-  overflow:hidden;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;position:relative;
-}
-.profile-avatar img{width:100%;height:100%;object-fit:cover;display:none;}
-.profile-avatar .av-placeholder{font-size:1.4rem;font-weight:800;color:var(--red);opacity:.4;}
-.profile-avatar .av-overlay{
-  position:absolute;inset:0;background:rgba(200,16,46,.5);
-  display:none;align-items:center;justify-content:center;border-radius:50%;
-  font-family:'Syne Mono',monospace;font-size:.4rem;letter-spacing:.08em;
-  text-transform:uppercase;color:#fff;text-align:center;
-}
-.profile-card:hover .av-overlay{display:flex;}
-.profile-name{font-size:.88rem;font-weight:700;text-align:center;color:var(--ink);}
-.profile-sub{font-family:'Syne Mono',monospace;font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
-#profileInput{display:none;}
+/* ── CONTENT ── */
+.main-content { flex: 1; padding: 3rem; overflow-y: auto; }
+.panel { display: none; max-width: 800px; margin: 0 auto; }
+.panel.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-/* ── CONTENT AREA ── */
-.content{flex:1;overflow-y:auto;background:var(--bg);}
+.card { background: var(--bg-card); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 2rem; }
+.card h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; margin-bottom: 1.5rem; }
 
-/* ── PANELS (each tab is a panel) ── */
-.panel{display:none;padding:2rem 2.5rem;max-width:1200px;}
-.panel.active{display:block;}
-.panel-header{margin-bottom:2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);}
-.panel-header h1{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.25rem;}
-.panel-header p{font-size:.85rem;color:var(--ink-soft);}
+.field { margin-bottom: 1.5rem; }
+.field label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 0.5rem; font-weight: 700; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 0.8rem 1rem; background: var(--bg-elevated); border: 1px solid var(--border); color: #fff; border-radius: 8px; outline: none; font-family: inherit;
+}
 
-/* ── STATUS BAR ── */
-.status{
-  padding:.85rem 1.1rem;font-family:'Syne Mono',monospace;font-size:.58rem;
-  letter-spacing:.1em;text-transform:uppercase;
-  margin-bottom:1.5rem;display:none;border-radius:8px;
+/* ── UPLOAD SHAPE ── */
+.upload-placeholder {
+  width: 100%; height: 250px; border: 2px dashed var(--border); border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; background: var(--bg-elevated); overflow: hidden; position: relative;
 }
-.status.ok{background:var(--green-a);color:var(--green);border:1px solid rgba(34,197,94,.2);display:block;}
-.status.err{background:var(--red-a);color:var(--red);border:1px solid rgba(200,16,46,.2);display:block;}
-.status.loading{background:var(--bg3);color:var(--ink-soft);border:1px solid var(--rule);display:block;}
+.upload-placeholder:hover { border-color: var(--red); }
+.upload-placeholder img { width: 100%; height: 100%; object-fit: contain; }
 
-/* ── TOKEN BOX ── */
-.token-card{
-  background:var(--bg2);border:1px solid rgba(200,16,46,.2);
-  border-radius:10px;padding:1.5rem;margin-bottom:1.8rem;
+/* ── LISTS ── */
+.archive-item {
+  display: flex; align-items: center; gap: 1rem; padding: 1rem;
+  background: var(--bg-elevated); border-radius: 10px; margin-bottom: 0.5rem; border: 1px solid var(--border);
 }
-.token-card h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem;}
-.token-card p{font-size:.8rem;color:var(--ink-soft);line-height:1.7;margin-bottom:1rem;}
-.token-card a{color:var(--red);text-decoration:none;}
-.token-row{display:flex;gap:.6rem;align-items:center;}
-.token-input{
-  flex:1;background:var(--bg3);border:1px solid var(--rule);
-  border-radius:8px;padding:.75rem 1rem;
-  font-family:'Syne Mono',monospace;font-size:.72rem;color:var(--ink);
-  outline:none;transition:border-color .2s;
-}
-.token-input:focus{border-color:var(--red);}
-.btn-save-token{
-  background:var(--red);color:#fff;border:none;border-radius:8px;
-  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;
-  letter-spacing:.06em;text-transform:uppercase;
-  padding:.75rem 1.2rem;cursor:pointer;transition:background .2s;white-space:nowrap;
-}
-.btn-save-token:hover{background:var(--red-h);}
+.archive-thumb { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
+.archive-info { flex: 1; }
+.btn-del { padding: 0.4rem 0.8rem; background: rgba(200, 16, 46, 0.1); border: 1px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-size: 0.7rem; }
 
-/* ── UPLOAD SECTION ── */
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
-@media(max-width:900px){.upload-grid{grid-template-columns:1fr;}}
-
-.card{background:var(--bg2);border:1px solid var(--rule);border-radius:12px;padding:1.8rem;}
-.card-title{font-size:1rem;font-weight:700;margin-bottom:1.5rem;padding-bottom:.9rem;border-bottom:1px solid var(--rule);}
-
-/* Drop zone */
-.drop-zone{
-  border:2px dashed rgba(232,228,222,.1);
-  border-radius:10px;padding:2.5rem 1.5rem;text-align:center;
-  cursor:pointer;transition:all .25s;margin-bottom:1.5rem;
-  background:var(--bg3);
-}
-.drop-zone:hover,.drop-zone.over{border-color:var(--red);background:var(--red-a);}
-.drop-prev{width:100%;max-height:200px;object-fit:contain;display:none;margin-bottom:.8rem;border-radius:8px;}
-.drop-icon{font-size:2.2rem;display:block;margin-bottom:.8rem;opacity:.3;}
-.drop-zone .drop-title{font-size:.95rem;font-weight:600;margin-bottom:.3rem;}
-.drop-zone .drop-hint{font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
-.drop-zone .drop-hint strong{color:var(--red);}
-.drop-fname{font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.08em;color:var(--green);display:none;margin-bottom:.5rem;}
-#fileInput{display:none;}
-
-/* Form fields */
-.field{margin-bottom:1.4rem;}
-.field label{
-  display:block;font-family:'Syne Mono',monospace;font-size:.55rem;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.6rem;
-}
-.field input,.field textarea,.field select{
-  width:100%;background:var(--bg3);border:1px solid var(--rule);
-  border-radius:8px;padding:.8rem 1rem;
-  font-family:'Syne',sans-serif;font-size:.9rem;color:var(--ink);
-  outline:none;transition:border-color .2s;resize:none;
-}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--red);}
-.field select option{background:var(--bg2);}
-.field textarea{min-height:90px;line-height:1.7;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.price-field label{color:rgba(200,16,46,.9);}
-.price-field input{border-color:rgba(200,16,46,.2);color:var(--red);}
-.price-field input:focus{border-color:var(--red);}
-#subcatWrap{display:none;}
-
-/* Toggle */
-.toggle-row{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg3);border:1px solid var(--rule);border-radius:10px;
-  padding:1rem 1.2rem;margin-bottom:1.5rem;
-}
-.toggle-info .toggle-label{font-size:.88rem;font-weight:600;}
-.toggle-info .toggle-desc{font-family:'Syne Mono',monospace;font-size:.5rem;letter-spacing:.08em;color:var(--ink-soft);margin-top:.25rem;}
-.toggle-wrap{position:relative;width:42px;height:24px;flex-shrink:0;}
-.toggle-wrap input{opacity:0;width:0;height:0;position:absolute;}
-.toggle-slider{position:absolute;inset:0;background:rgba(232,228,222,.12);border-radius:100px;cursor:pointer;transition:background .25s;}
-.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:4px;left:4px;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.4);}
-.toggle-wrap input:checked+.toggle-slider{background:var(--red);}
-.toggle-wrap input:checked+.toggle-slider::before{transform:translateX(18px);}
-
-/* Publish button */
-.btn-publish{
-  width:100%;padding:1.1rem;background:var(--red);color:#fff;
-  font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;
-  border:none;border-radius:10px;cursor:pointer;
-  transition:background .2s;
-}
-.btn-publish:hover{background:var(--red-h);}
-.btn-publish:disabled{opacity:.4;cursor:not-allowed;}
-
-/* ── WORKS LIST ── */
-.list-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
-.list-count-badge{
-  background:var(--bg3);border:1px solid var(--rule);
-  border-radius:6px;padding:.4rem .9rem;
-  font-family:'Syne Mono',monospace;font-size:.58rem;letter-spacing:.12em;
-  color:var(--ink-soft);
-}
-.filter-tabs{display:flex;gap:.4rem;flex-wrap:wrap;}
-.filter-tab{
-  padding:.45rem 1rem;border-radius:8px;border:1px solid var(--rule);
-  background:none;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:500;
-  color:var(--ink-soft);cursor:pointer;transition:all .2s;
-  -webkit-tap-highlight-color:transparent;
-}
-.filter-tab:hover{color:var(--ink);background:var(--bg3);}
-.filter-tab.active{color:var(--red);background:var(--red-a);border-color:rgba(200,16,46,.25);}
-
-/* Work card */
-.works-grid{display:flex;flex-direction:column;gap:.6rem;}
-.aw-card{
-  display:grid;grid-template-columns:72px 1fr auto;gap:1rem;align-items:center;
-  background:var(--bg2);border:1px solid var(--rule);border-radius:10px;
-  padding:1rem 1.2rem;
-  animation:cardIn .3s ease both;
-  transition:border-color .2s;
-}
-.aw-card:hover{border-color:rgba(255,255,255,.1);}
-@keyframes cardIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.aw-thumb{
-  width:72px;height:72px;object-fit:cover;border-radius:8px;
-  background:var(--bg3);border:1px solid var(--rule);flex-shrink:0;
-}
-.aw-body{min-width:0;}
-.aw-title{font-size:.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.3rem;}
-.aw-meta{font-family:'Syne Mono',monospace;font-size:.52rem;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:.5rem;}
-.aw-tags{display:flex;gap:.35rem;flex-wrap:wrap;}
-.tag{
-  font-family:'Syne Mono',monospace;font-size:.48rem;letter-spacing:.1em;
-  text-transform:uppercase;padding:.2rem .55rem;border-radius:5px;
-}
-.tag-type{background:var(--red-a);color:var(--red);border:1px solid rgba(200,16,46,.2);}
-.tag-price{background:var(--green-a);color:var(--green);border:1px solid rgba(34,197,94,.2);}
-.tag-feat{background:var(--bg4);color:var(--ink-soft);border:1px solid var(--rule);cursor:pointer;transition:all .2s;}
-.tag-feat:hover{border-color:var(--red);color:var(--red);}
-.tag-feat.on{background:var(--red-a);color:var(--red);border-color:rgba(200,16,46,.3);}
-.aw-actions{display:flex;flex-direction:column;gap:.4rem;flex-shrink:0;}
-.btn-del{
-  background:none;border:1px solid rgba(200,16,46,.2);color:var(--red);
-  font-family:'Syne Mono',monospace;font-size:.5rem;letter-spacing:.1em;
-  text-transform:uppercase;padding:.45rem .85rem;border-radius:7px;
-  cursor:pointer;transition:all .2s;white-space:nowrap;
-}
-.btn-del:hover{background:rgba(200,16,46,.08);}
-.list-empty{
-  text-align:center;padding:5rem 2rem;
-  background:var(--bg2);border:1px solid var(--rule);border-radius:12px;
-}
-.list-empty .empty-icon{font-size:2.5rem;opacity:.15;margin-bottom:1rem;}
-.list-empty p{font-family:'Syne Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);line-height:2.2;}
-
-/* ── PROFILE PANEL ── */
-.profile-panel-grid{display:grid;grid-template-columns:280px 1fr;gap:2rem;align-items:start;}
-@media(max-width:900px){.profile-panel-grid{grid-template-columns:1fr;}}
-.avatar-upload-card{
-  background:var(--bg2);border:1px solid var(--rule);border-radius:12px;
-  padding:2rem;text-align:center;
-}
-.big-avatar{
-  width:120px;height:120px;border-radius:50%;
-  background:var(--bg3);border:3px solid var(--rule);
-  margin:0 auto 1.2rem;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:border-color .25s;position:relative;
-}
-.big-avatar:hover{border-color:var(--red);}
-.big-avatar img{width:100%;height:100%;object-fit:cover;display:none;}
-.big-avatar .av-ph{font-size:2.5rem;font-weight:800;color:var(--red);opacity:.3;}
-.big-avatar .av-edit{
-  position:absolute;inset:0;background:rgba(200,16,46,.55);
-  display:none;align-items:center;justify-content:center;
-  border-radius:50%;flex-direction:column;gap:.3rem;
-}
-.big-avatar:hover .av-edit{display:flex;}
-.av-edit span{font-family:'Syne Mono',monospace;font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
-.avatar-upload-card h3{font-size:1rem;font-weight:700;margin-bottom:.3rem;}
-.avatar-upload-card p{font-size:.8rem;color:var(--ink-soft);margin-bottom:1.2rem;line-height:1.6;}
-.btn-upload-photo{
-  display:inline-block;padding:.7rem 1.4rem;
-  background:var(--bg3);border:1px solid var(--rule);border-radius:8px;
-  font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;
-  color:var(--ink-soft);cursor:pointer;transition:all .2s;
-}
-.btn-upload-photo:hover{border-color:var(--red);color:var(--red);}
-#profileImgInput{display:none;}
-.profile-info-card{
-  background:var(--bg2);border:1px solid var(--rule);border-radius:12px;padding:1.8rem;
-}
-.profile-info-card h3{font-size:1rem;font-weight:700;margin-bottom:1.5rem;padding-bottom:.9rem;border-bottom:1px solid var(--rule);}
-.info-row{display:flex;justify-content:space-between;align-items:center;padding:.9rem 0;border-bottom:1px solid var(--rule);}
-.info-row:last-child{border-bottom:none;}
-.info-key{font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);}
-.info-val{font-size:.88rem;font-weight:500;color:var(--ink);}
-.info-val.red{color:var(--red);}
-
-/* ── MOBILE OVERLAY ── */
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;-webkit-tap-highlight-color:transparent;}
-.sidebar-overlay.show{display:block;}
-
-/* ── MOBILE ── */
-@media(max-width:768px){
-  .burger{display:flex;}
-  .sidebar{
-    position:fixed;left:0;top:56px;bottom:0;z-index:160;
-    transform:translateX(-100%);
-  }
-  .sidebar.open{transform:translateX(0);}
-  .content{overflow-y:auto;}
-  .panel{padding:1.5rem 1.2rem;}
-  .panel-header h1{font-size:1.25rem;}
-  .aw-card{grid-template-columns:56px 1fr;gap:.8rem;}
-  .aw-actions{flex-direction:row;grid-column:1/-1;}
-  .filter-tabs{gap:.3rem;}
-  .filter-tab{padding:.38rem .75rem;font-size:.72rem;}
-  .upload-grid{grid-template-columns:1fr;}
-  .field-row{grid-template-columns:1fr;}
-}
-@media(max-width:480px){
-  .tb-viewsite{display:none;}
-  .token-row{flex-direction:column;}
-  .btn-save-token{width:100%;}
-}
+#statusMsg { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 2rem; border-radius: 8px; z-index: 1000; font-weight: 700; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.ok { background: #10b981; color: #fff; }
+.err { background: #ef4444; color: #fff; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-brand">
-    <div class="name">ST117</div>
-    <span class="sub">Admin Studio</span>
-  </div>
+  <div class="login-brand"><h1>ST117</h1></div>
   <div class="login-card">
-    <h2>Welcome back</h2>
-    <p>Sign in to manage your artworks and studio</p>
-    <div class="field-group">
-      <label for="pwInput">Password</label>
-      <input type="password" id="pwInput" placeholder="Enter your password" autocomplete="current-password"/>
-    </div>
-    <div class="login-err" id="loginErr"></div>
-    <button class="btn-login" id="loginBtn">Enter Studio →</button>
+    <input type="password" id="pwInput" placeholder="Master Password">
+    <button class="btn-prime" id="loginBtn">Enter Studio</button>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="tb-left">
-      <button class="burger" id="burgerBtn" aria-label="Menu">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect y="3" width="20" height="2" rx="1" fill="currentColor"/>
-          <rect y="9" width="20" height="2" rx="1" fill="currentColor"/>
-          <rect y="15" width="20" height="2" rx="1" fill="currentColor"/>
-        </svg>
-      </button>
-      <div class="tb-brand">ST117 <span>/ Admin</span></div>
-    </div>
-    <div class="tb-right">
-      <a class="tb-viewsite" href="index.html" target="_blank">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M11 1L6 6M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        View Site
-      </a>
-      <button class="tb-logout" id="logoutBtn">Log Out</button>
-    </div>
+    <div style="font-family:'Inter', sans-serif; font-weight:900; color:var(--red); font-size:1.2rem;">ST117 / STUDIO</div>
+    <div style="font-size:0.7rem; color:var(--ink-soft); letter-spacing:0.1em;">SYSTEM READY</div>
   </div>
 
-  <!-- BODY -->
   <div class="app-body">
-
-    <!-- MOBILE OVERLAY -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-
-      <!-- Profile Card -->
-      <div class="profile-card" onclick="switchPanel('profile')">
-        <div class="profile-avatar" id="sidebarAvatar">
-          <span class="av-placeholder">ST</span>
-          <img id="sidebarAvatarImg" src="" alt=""/>
-          <div class="av-overlay">Change</div>
+    <nav class="sidebar">
+      <div class="artist-profile-box">
+        <div class="artist-avatar-circle" id="sidebarAvatar">
+          <img src="https://via.placeholder.com/80" id="currentArtistImg">
         </div>
-        <div>
-          <div class="profile-name">ST117</div>
-          <div class="profile-sub">Visual Artist</div>
+        <div style="font-weight:700; font-size:0.8rem; letter-spacing:0.05em;">LURAN OSMANI</div>
+      </div>
+      <button class="nav-btn active" onclick="showPanel('publish', this)">Publish New</button>
+      <button class="nav-btn" onclick="showPanel('archive', this)">Manage Archive</button>
+      <button class="nav-btn" onclick="showPanel('identity', this)">Studio Identity</button>
+      <button class="nav-btn" onclick="showPanel('token', this)">GitHub Access</button>
+      <div style="margin-top:auto;">
+         <button class="nav-btn" onclick="location.reload()" style="color:var(--red);">Logout</button>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <!-- PUBLISH -->
+      <div id="panel-publish" class="panel active">
+        <div class="card">
+          <h2>Deploy Artwork</h2>
+          <div class="field">
+            <label>Image (Upload future works)</label>
+            <div class="upload-placeholder" onclick="document.getElementById('artworkFile').click()">
+              <img id="artworkPreview" style="display:none;">
+              <div id="uploadText">Click to select image</div>
+            </div>
+            <input type="file" id="artworkFile" style="display:none;" onchange="preview(this, 'artworkPreview', 'uploadText')">
+          </div>
+          <div class="field"><label>Title</label><input type="text" id="artTitle"></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="field">
+              <label>Category</label>
+              <select id="artType">
+                <option>Paintings</option>
+                <option>Drawings</option>
+                <option>Photography</option>
+                <option>Printmaking</option>
+                <option>Mixed Media</option>
+              </select>
+            </div>
+            <div class="field"><label>Year</label><input type="text" id="artYear" value="2026"></div>
+          </div>
+          <button class="btn-prime" id="publishBtn">Confirm & Deploy</button>
         </div>
       </div>
 
-      <div class="sidebar-divider"></div>
-
-      <div class="sidebar-section">
-        <span class="sidebar-label">Studio</span>
-        <button class="nav-item active" data-panel="upload" onclick="switchPanel('upload')">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v10M4 4L8 1l4 3M2 12v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Publish Artwork
-        </button>
-        <button class="nav-item" data-panel="works" onclick="switchPanel('works')">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
-          All Works
-        </button>
-      </div>
-
-      <div class="sidebar-section">
-        <span class="sidebar-label">Settings</span>
-        <button class="nav-item" data-panel="profile" onclick="switchPanel('profile')">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Profile
-        </button>
-        <button class="nav-item" data-panel="token" onclick="switchPanel('token')">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          GitHub Token
-        </button>
-      </div>
-
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- STATUS (shared) -->
-      <div style="padding:1.5rem 2.5rem 0;" id="statusWrap">
-        <div class="status" id="statusBar"></div>
-      </div>
-
-      <!-- PANEL: UPLOAD -->
-      <div class="panel active" id="panel-upload">
-        <div class="panel-header">
-          <h1>Publish Artwork</h1>
-          <p>Upload a new artwork to your portfolio</p>
-        </div>
-        <div class="upload-grid">
-          <!-- Left: Image + details -->
-          <div>
-            <div class="card">
-              <div class="card-title">Artwork Image</div>
-              <div class="drop-zone" id="dropZone">
-                <img class="drop-prev" id="dropPrev" alt="preview"/>
-                <span class="drop-fname" id="dropFname"></span>
-                <span class="drop-icon" id="dropIcon">🖼</span>
-                <div class="drop-title" id="dropTitle">Drop image here</div>
-                <div class="drop-hint" id="dropHint">or <strong>click to browse</strong></div>
-              </div>
-              <input type="file" id="fileInput" accept="image/*"/>
-            </div>
-          </div>
-          <!-- Right: Form -->
-          <div>
-            <div class="card">
-              <div class="card-title">Artwork Details</div>
-              <div class="field">
-                <label>Title *</label>
-                <input type="text" id="fTitle" placeholder="Name of the artwork"/>
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label>Art Type</label>
-                  <select id="fType">
-                    <option value="">— Select —</option>
-                    <option value="Painting">Painting</option>
-                    <option value="Drawing">Drawing</option>
-                    <option value="Photography">Photography</option>
-                    <option value="Printmaking">Printmaking</option>
-                    <option value="Etching">Etching</option>
-                    <option value="Linocut">Linocut</option>
-                    <option value="Screen Print">Screen Print</option>
-                    <option value="Illustration">Illustration</option>
-                    <option value="Mixed Media">Mixed Media</option>
-                  </select>
-                </div>
-                <div class="field" id="subcatWrap">
-                  <label>Subcategory</label>
-                  <select id="fSubcat"><option value="">— Select —</option></select>
-                </div>
-              </div>
-              <div class="field">
-                <label>Description</label>
-                <textarea id="fDesc" placeholder="The story behind this work…"></textarea>
-              </div>
-              <div class="field-row">
-                <div class="field"><label>Size</label><input type="text" id="fSize" placeholder="60 × 80 cm"/></div>
-                <div class="field"><label>Year</label><input type="text" id="fYear" placeholder="2026"/></div>
-              </div>
-              <div class="field price-field">
-                <label>Price</label>
-                <input type="text" id="fPrice" placeholder="€450 or Not for sale"/>
-              </div>
-              <div class="toggle-row">
-                <div class="toggle-info">
-                  <div class="toggle-label">Feature on homepage</div>
-                  <div class="toggle-desc">Shows in the Featured section</div>
-                </div>
-                <div class="toggle-wrap">
-                  <input type="checkbox" id="fFeatured"/>
-                  <div class="toggle-slider"></div>
-                </div>
-              </div>
-              <button class="btn-publish" id="publishBtn">Publish Artwork →</button>
-            </div>
-          </div>
+      <!-- ARCHIVE -->
+      <div id="panel-archive" class="panel">
+        <div class="card">
+          <h2>Archive Management</h2>
+          <div id="archiveList"><p style="color:var(--ink-soft)">Loading from GitHub...</p></div>
         </div>
       </div>
 
-      <!-- PANEL: WORKS -->
-      <div class="panel" id="panel-works">
-        <div class="panel-header">
-          <h1>All Works</h1>
-          <p>Manage your published artworks</p>
-        </div>
-        <div class="list-controls">
-          <span class="list-count-badge" id="listCount">0 artworks</span>
-          <div class="filter-tabs" id="filterTabs">
-            <button class="filter-tab active" data-lcat="all">All</button>
-            <button class="filter-tab" data-lcat="paintings">Paintings</button>
-            <button class="filter-tab" data-lcat="drawings">Drawings</button>
-            <button class="filter-tab" data-lcat="photography">Photography</button>
-            <button class="filter-tab" data-lcat="printmaking">Printmaking</button>
+      <!-- IDENTITY -->
+      <div id="panel-identity" class="panel">
+        <div class="card">
+          <h2>Identity Details</h2>
+          <div class="field">
+            <label>Update Artist Photo (Rounded Shape)</label>
+            <div class="artist-avatar-circle" style="width:140px; height:140px; cursor:pointer;" onclick="document.getElementById('profileFile').click()">
+              <img id="profilePreview" src="https://via.placeholder.com/140">
+            </div>
+            <input type="file" id="profileFile" style="display:none;" onchange="preview(this, 'profilePreview')">
           </div>
-        </div>
-        <div class="works-grid" id="awList"></div>
-      </div>
-
-      <!-- PANEL: PROFILE -->
-      <div class="panel" id="panel-profile">
-        <div class="panel-header">
-          <h1>Profile</h1>
-          <p>Manage your studio profile and photo</p>
-        </div>
-        <div class="profile-panel-grid">
-          <div class="avatar-upload-card">
-            <div class="big-avatar" id="bigAvatar" onclick="document.getElementById('profileImgInput').click()">
-              <span class="av-ph">ST</span>
-              <img id="bigAvatarImg" src="" alt=""/>
-              <div class="av-edit">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5a2.121 2.121 0 0 1 3 3L6 17H3v-3L14.5 2.5z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span>Change</span>
-              </div>
-            </div>
-            <h3>Profile Photo</h3>
-            <p>This photo appears on your Info page. Click to upload a new one.</p>
-            <label class="btn-upload-photo" for="profileImgInput">Upload Photo</label>
-            <input type="file" id="profileImgInput" accept="image/*"/>
-          </div>
-          <div class="profile-info-card">
-            <h3>Studio Info</h3>
-            <div class="info-row">
-              <span class="info-key">Brand</span>
-              <span class="info-val red">ST117</span>
-            </div>
-            <div class="info-row">
-              <span class="info-key">Type</span>
-              <span class="info-val">Visual Artist</span>
-            </div>
-            <div class="info-row">
-              <span class="info-key">Disciplines</span>
-              <span class="info-val">Paintings · Drawings · Photography · Printmaking</span>
-            </div>
-            <div class="info-row">
-              <span class="info-key">Heritage</span>
-              <span class="info-val">Albanian 🦅</span>
-            </div>
-            <div class="info-row">
-              <span class="info-key">Site</span>
-              <span class="info-val" id="siteUrl" style="font-size:.78rem;"></span>
-            </div>
-          </div>
+          <button class="btn-prime" id="saveIdentityBtn">Update Identity</button>
         </div>
       </div>
 
-      <!-- PANEL: TOKEN -->
-      <div class="panel" id="panel-token">
-        <div class="panel-header">
-          <h1>GitHub Token</h1>
-          <p>Required to publish and manage artworks</p>
-        </div>
-        <div class="token-card">
-          <h3>Personal Access Token</h3>
-          <p>
-            Your token is saved in this browser. You only need to update it if it expires or you switch browsers.<br><br>
-            Don't have one? <a href="https://github.com/settings/tokens/new?scopes=repo&description=ST117+Admin" target="_blank">Generate a new token →</a>
-            (make sure to check the <strong style="color:var(--ink)">repo</strong> scope)
-          </p>
-          <div class="token-row">
-            <input type="password" class="token-input" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/>
-            <button class="btn-save-token" id="saveTokenBtn">Save Token</button>
+      <!-- TOKEN -->
+      <div id="panel-token" class="panel">
+        <div class="card">
+          <h2>Access Token</h2>
+          <div class="field">
+            <label>GitHub Personal Access Token</label>
+            <input type="password" id="ghToken" placeholder="ghp_...">
           </div>
-        </div>
-        <div class="card" style="margin-top:1.5rem;">
-          <div class="card-title">Token Status</div>
-          <div class="info-row">
-            <span class="info-key">Status</span>
-            <span class="info-val" id="tokenStatus">—</span>
-          </div>
-          <div class="info-row">
-            <span class="info-key">Repository</span>
-            <span class="info-val" id="tokenRepo">—</span>
-          </div>
+          <button class="btn-prime" onclick="saveToken()">Save & Sync</button>
         </div>
       </div>
+    </main>
+  </div>
+</div>
 
-    </div><!-- /content -->
-  </div><!-- /app-body -->
-</div><!-- /app -->
+<div id="statusMsg"></div>
 
 <script>
-(function(){
-'use strict';
+const REPO_OWNER = 'luranosmani024-ai';
+const REPO_NAME  = 'ST117.github.io';
+const DATA_PATH  = 'data/artworks.json';
+const PASSWORD   = 'Tetova357357';
 
-var REPO_OWNER = 'luranosmani024-ai';
-var REPO_NAME  = 'luranosmani024-ai.github.io';
-var BRANCH     = 'main';
-var PASSWORD   = 'Tetova357357';
+let githubToken = localStorage.getItem('st117_token') || '';
 
-var CAT_MATCH = {
-  paintings:   ['painting','paintings'],
-  drawings:    ['drawing','drawings','illustration'],
-  photography: ['photography','photo'],
-  printmaking: ['printmaking','print','etching','linocut','screen print','woodblock','monotype']
-};
-var SUBCATS = {
-  'Painting':    ['Oil','Acrylic','Watercolor','Gouache','Tempera','Mixed'],
-  'Drawing':     ['Pencil','Charcoal','Ink','Portrait','Figure','Sketch'],
-  'Photography': ['Portrait','Landscape','Street','Documentary','Abstract','Architecture'],
-  'Printmaking': ['Etching','Linocut','Screen Print','Woodblock','Monotype','Drypoint'],
-  'Etching':     ['Etching','Drypoint','Intaglio'],
-  'Linocut':     ['Linocut','Lino Relief'],
-  'Screen Print':['Screen Print','Silkscreen'],
-  'Illustration':['Digital','Traditional','Editorial']
-};
-
-/* ── AUTH ── */
-if(sessionStorage.getItem('st117_auth')==='1') unlock();
-document.getElementById('loginBtn').addEventListener('click', tryLogin);
-document.getElementById('pwInput').addEventListener('keydown', function(e){ if(e.key==='Enter') tryLogin(); });
-function tryLogin(){
-  if(document.getElementById('pwInput').value === PASSWORD){
-    sessionStorage.setItem('st117_auth','1'); unlock();
-  } else {
-    document.getElementById('loginErr').textContent = 'Incorrect password.';
-    document.getElementById('pwInput').value = '';
-    document.getElementById('pwInput').focus();
-  }
-}
-function unlock(){
-  document.getElementById('loginScreen').classList.add('gone');
-  document.getElementById('app').classList.add('on');
-  initApp();
-}
-document.getElementById('logoutBtn').addEventListener('click', function(){
-  sessionStorage.removeItem('st117_auth'); location.reload();
-});
-
-/* ── PANEL SWITCHING ── */
-function switchPanel(id){
-  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-  var panel = document.getElementById('panel-'+id);
-  if(panel) panel.classList.add('active');
-  document.querySelectorAll('.nav-item[data-panel="'+id+'"]').forEach(function(n){ n.classList.add('active'); });
-  closeSidebar();
-  if(id==='works') renderList(window._adminAW||[], activeLcat);
-}
-
-/* ── MOBILE SIDEBAR ── */
-var sidebar  = document.getElementById('sidebar');
-var overlay  = document.getElementById('sidebarOverlay');
-var burgerBtn = document.getElementById('burgerBtn');
-burgerBtn.addEventListener('click', function(){ sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
-overlay.addEventListener('click', closeSidebar);
-function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-
-/* ── STATUS ── */
-var stTimer = null;
-function showStatus(msg, type){
-  var bar = document.getElementById('statusBar');
-  bar.textContent = msg; bar.className = 'status '+type;
-  document.getElementById('statusWrap').style.display = msg ? 'block' : 'none';
-  if(stTimer) clearTimeout(stTimer);
-  if(type !== 'loading') stTimer = setTimeout(function(){ bar.className='status'; }, 4000);
-}
-
-/* ── TOKEN ── */
-var ghToken = localStorage.getItem('st117_token') || '';
-if(ghToken){
-  document.getElementById('ghTokenInput').value = ghToken;
-  document.getElementById('tokenStatus').textContent = '✓ Saved';
-  document.getElementById('tokenStatus').style.color = 'var(--green)';
-  document.getElementById('tokenRepo').textContent = REPO_OWNER+'/'+REPO_NAME;
-}
-document.getElementById('saveTokenBtn').addEventListener('click', function(){
-  var val = document.getElementById('ghTokenInput').value.trim();
-  if(!val){ showStatus('Token cannot be empty','err'); return; }
-  ghToken = val;
-  localStorage.setItem('st117_token', ghToken);
-  document.getElementById('tokenStatus').textContent = '✓ Saved';
-  document.getElementById('tokenStatus').style.color = 'var(--green)';
-  document.getElementById('tokenRepo').textContent = REPO_OWNER+'/'+REPO_NAME;
-  showStatus('Token saved successfully','ok');
-});
-
-/* ── PROFILE PHOTO ── */
-function loadSavedPhoto(){
-  var saved = localStorage.getItem('st117_photo');
-  if(saved){
-    var si = document.getElementById('sidebarAvatarImg');
-    var sp = document.getElementById('sidebarAvatar').querySelector('.av-placeholder');
-    var bi = document.getElementById('bigAvatarImg');
-    var bp = document.getElementById('bigAvatar').querySelector('.av-ph');
-    si.src = saved; si.style.display = 'block'; if(sp) sp.style.display='none';
-    bi.src = saved; bi.style.display = 'block'; if(bp) bp.style.display='none';
-  }
-}
-loadSavedPhoto();
-document.getElementById('profileImgInput').addEventListener('change', function(){
-  var f = this.files[0]; if(!f) return;
-  var reader = new FileReader();
-  reader.onload = function(ev){
-    var src = ev.target.result;
-    localStorage.setItem('st117_photo', src);
-    loadSavedPhoto();
-    showStatus('Profile photo updated','ok');
-  };
-  reader.readAsDataURL(f);
-});
-// Also wire sidebar avatar click
-document.getElementById('sidebarAvatar').addEventListener('click', function(){
-  document.getElementById('profileImgInput').click();
-});
-
-/* ── SITE URL ── */
-document.getElementById('siteUrl').textContent = window.location.origin + window.location.pathname.replace('admin.html','');
-
-/* ── SUBCATS ── */
-document.getElementById('fType').addEventListener('change', function(){
-  var type = this.value;
-  var wrap = document.getElementById('subcatWrap');
-  var sel  = document.getElementById('fSubcat');
-  var subs = SUBCATS[type];
-  if(subs && subs.length){
-    sel.innerHTML = '<option value="">— Select —</option>'
-      + subs.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
-    wrap.style.display = 'block';
-  } else {
-    sel.innerHTML = '<option value="">— Select —</option>';
-    wrap.style.display = 'none';
-  }
-});
-
-/* ── DROP ZONE ── */
-var pendingFile = null;
-var dz    = document.getElementById('dropZone');
-var fi    = document.getElementById('fileInput');
-var dPrev = document.getElementById('dropPrev');
-var dFname= document.getElementById('dropFname');
-var dIcon = document.getElementById('dropIcon');
-var dTitle= document.getElementById('dropTitle');
-var dHint = document.getElementById('dropHint');
-dz.addEventListener('click', function(){ fi.click(); });
-dz.addEventListener('dragover',  function(e){ e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', function(){ dz.classList.remove('over'); });
-dz.addEventListener('drop', function(e){
-  e.preventDefault(); dz.classList.remove('over');
-  var f = e.dataTransfer.files[0];
-  if(f && f.type.startsWith('image/')) loadPreview(f);
-});
-fi.addEventListener('change', function(){ if(fi.files[0]) loadPreview(fi.files[0]); });
-function loadPreview(f){
-  pendingFile = f;
-  var reader  = new FileReader();
-  reader.onload = function(e){
-    dPrev.src = e.target.result; dPrev.style.display = 'block';
-    dFname.textContent = f.name; dFname.style.display = 'block';
-    dIcon.style.display = 'none'; dTitle.style.display = 'none'; dHint.style.display = 'none';
-  };
-  reader.readAsDataURL(f);
-}
-function resetForm(){
-  pendingFile = null;
-  dPrev.style.display='none'; dFname.style.display='none';
-  dIcon.style.display='block'; dTitle.style.display='block'; dHint.style.display='block';
-  fi.value = '';
-  ['fTitle','fDesc','fSize','fYear','fPrice'].forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('fType').value = '';
-  document.getElementById('fSubcat').value = '';
-  document.getElementById('fFeatured').checked = false;
-  document.getElementById('subcatWrap').style.display = 'none';
-}
-
-/* ── GITHUB API ── */
-var API = 'https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/';
-function ghH(){ return {'Authorization':'Bearer '+ghToken,'Content-Type':'application/json','Accept':'application/vnd.github+json'}; }
-function ghFetch(method, path, body){
-  return fetch(API+path, {method:method, headers:ghH(), body:body?JSON.stringify(body):undefined})
-    .then(function(r){
-      if(r.status===404) return null;
-      return r.json().then(function(data){
-        if(!r.ok) throw new Error(data.message||'GitHub error '+r.status);
-        return data;
-      });
-    });
-}
-function loadData(){
-  return ghFetch('GET','artworks.json').then(function(f){
-    if(!f) return {list:[],sha:null};
-    var raw = atob(f.content.replace(/\n/g,''));
-    return {list:JSON.parse(raw), sha:f.sha};
-  });
-}
-function b64File(f){
-  return new Promise(function(res,rej){
-    var r = new FileReader();
-    r.onload = function(e){ res(e.target.result.split(',')[1]); };
-    r.onerror = rej;
-    r.readAsDataURL(f);
-  });
-}
-
-/* ── PUBLISH ── */
-document.getElementById('publishBtn').addEventListener('click', function(){
-  if(!ghToken){ showStatus('Save your GitHub token first — go to Settings → GitHub Token','err'); return; }
-  if(!pendingFile){ showStatus('Select an image first','err'); return; }
-  var title = document.getElementById('fTitle').value.trim();
-  if(!title){ showStatus('Enter a title','err'); return; }
-  var btn = document.getElementById('publishBtn'); btn.disabled = true;
-  var ext  = (pendingFile.name.split('.').pop()||'jpg').toLowerCase();
-  var safe = title.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+Date.now()+'.'+ext;
-  var imgPath = 'images/'+safe;
-  showStatus('Uploading image…','loading');
-  b64File(pendingFile).then(function(b64){
-    return ghFetch('PUT', imgPath, {message:'Upload '+safe, content:b64, branch:BRANCH});
-  }).then(function(){
-    showStatus('Saving artwork data…','loading');
-    return loadData();
-  }).then(function(result){
-    var list = result.list; var sha = result.sha;
-    list.unshift({
-      id:          Date.now(),
-      image:       imgPath,
-      title:       title,
-      type:        document.getElementById('fType').value,
-      subcategory: document.getElementById('fSubcat').value,
-      description: document.getElementById('fDesc').value.trim(),
-      size:        document.getElementById('fSize').value.trim(),
-      year:        document.getElementById('fYear').value.trim(),
-      price:       document.getElementById('fPrice').value.trim(),
-      featured:    document.getElementById('fFeatured').checked,
-      date:        new Date().toISOString()
-    });
-    var content = btoa(unescape(encodeURIComponent(JSON.stringify(list,null,2))));
-    return ghFetch('PUT','artworks.json',{message:'Add artwork: '+title, content:content, sha:sha, branch:BRANCH})
-      .then(function(){ return list; });
-  }).then(function(list){
-    showStatus('✓ Published! Live on your site in ~1 minute.','ok');
-    resetForm(); window._adminAW = list;
-    switchPanel('works');
-  }).catch(function(err){ showStatus('Error: '+err.message,'err'); })
-  .then(function(){ btn.disabled = false; });
-});
-
-/* ── WORKS LIST ── */
-var activeLcat = 'all';
-document.getElementById('filterTabs').querySelectorAll('.filter-tab').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    document.querySelectorAll('.filter-tab').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active'); activeLcat = btn.dataset.lcat;
-    if(window._adminAW) renderList(window._adminAW, activeLcat);
-  });
-});
-
-function catMatchAdmin(a, catId){
-  if(catId==='all') return true;
-  var t = (a.type||'').toLowerCase();
-  var m = CAT_MATCH[catId]||[];
-  return m.some(function(x){ return t===x||t.indexOf(x)!==-1; });
-}
-
-function renderList(list, cat){
-  window._adminAW = list;
-  var filtered = list.filter(function(a){ return catMatchAdmin(a,cat); });
-  document.getElementById('listCount').textContent = filtered.length+' artwork'+(filtered.length!==1?'s':'');
-  var el = document.getElementById('awList');
-  if(!filtered.length){
-    el.innerHTML = '<div class="list-empty">'
-      +'<div class="empty-icon">🖼</div>'
-      +'<p>No artworks here yet.<br>Publish your first artwork to see it here.</p>'
-      +'</div>';
-    return;
-  }
-  el.innerHTML = filtered.map(function(a,i){
-    var imgSrc = 'https://raw.githubusercontent.com/'+REPO_OWNER+'/'+REPO_NAME+'/'+BRANCH+'/'+a.image;
-    var meta   = [a.type, a.year, a.size].filter(Boolean).join(' · ');
-    return '<div class="aw-card" style="animation-delay:'+(i*.04)+'s">'
-      +'<img class="aw-thumb" src="'+imgSrc+'" alt="" onerror="this.style.opacity=\'0.2\'"/>'
-      +'<div class="aw-body">'
-      +'<div class="aw-title">'+(a.title||'—')+'</div>'
-      +'<div class="aw-meta">'+meta+'</div>'
-      +'<div class="aw-tags">'
-      +(a.type   ? '<span class="tag tag-type">'+a.type+'</span>' : '')
-      +(a.price  ? '<span class="tag tag-price">'+a.price+'</span>' : '')
-      +(a.subcategory ? '<span class="tag" style="background:var(--bg4);border:1px solid var(--rule);color:var(--ink-soft)">'+a.subcategory+'</span>' : '')
-      +'<span class="tag tag-feat'+(a.featured?' on':'')+'" data-id="'+a.id+'">'+(a.featured?'★ Featured':'☆ Feature')+'</span>'
-      +'</div></div>'
-      +'<div class="aw-actions">'
-      +'<button class="btn-del" data-id="'+a.id+'">Delete</button>'
-      +'</div>'
-      +'</div>';
-  }).join('');
-  el.querySelectorAll('.tag-feat').forEach(function(b){ b.addEventListener('click',function(){ toggleFeatured(+b.dataset.id); }); });
-  el.querySelectorAll('.btn-del').forEach(function(b){ b.addEventListener('click',function(){ deleteWork(+b.dataset.id); }); });
-}
-
-function toggleFeatured(id){
-  if(!ghToken){ showStatus('Save token first','err'); return; }
-  showStatus('Updating…','loading');
-  loadData().then(function(result){
-    var list=result.list; var sha=result.sha;
-    var a=list.find(function(x){ return x.id===id; }); if(!a) throw new Error('Not found');
-    a.featured = !a.featured;
-    var content=btoa(unescape(encodeURIComponent(JSON.stringify(list,null,2))));
-    return ghFetch('PUT','artworks.json',{message:'Toggle featured: '+a.title,content:content,sha:sha,branch:BRANCH})
-      .then(function(){ showStatus(a.featured?'★ Marked featured':'Removed from featured','ok'); window._adminAW=list; renderList(list,activeLcat); });
-  }).catch(function(err){ showStatus('Error: '+err.message,'err'); });
-}
-
-function deleteWork(id){
-  if(!confirm('Delete this artwork? This cannot be undone.')) return;
-  if(!ghToken){ showStatus('Save token first','err'); return; }
-  showStatus('Deleting…','loading');
-  var toDelete=null;
-  loadData().then(function(result){
-    var list=result.list; var sha=result.sha;
-    toDelete=list.find(function(x){ return x.id===id; }); if(!toDelete) throw new Error('Not found');
-    var updated=list.filter(function(x){ return x.id!==id; });
-    var content=btoa(unescape(encodeURIComponent(JSON.stringify(updated,null,2))));
-    return ghFetch('PUT','artworks.json',{message:'Delete: '+toDelete.title,content:content,sha:sha,branch:BRANCH})
-      .then(function(){ return updated; });
-  }).then(function(updated){
-    if(toDelete && toDelete.image){
-      return ghFetch('GET',toDelete.image).then(function(f){
-        if(f && f.sha) return ghFetch('DELETE',toDelete.image,{message:'Delete image',sha:f.sha,branch:BRANCH});
-      }).catch(function(){}).then(function(){ return updated; });
+// Login
+document.getElementById('loginBtn').onclick = () => {
+  if(document.getElementById('pwInput').value === PASSWORD) {
+    document.getElementById('loginScreen').classList.add('gone');
+    document.getElementById('app').classList.add('on');
+    if(githubToken) {
+      document.getElementById('ghToken').value = githubToken;
+      fetchArchive();
     }
-    return updated;
-  }).then(function(updated){
-    showStatus('✓ Deleted','ok'); window._adminAW=updated; renderList(updated,activeLcat);
-  }).catch(function(err){ showStatus('Error: '+err.message,'err'); });
+  } else { alert("Access Denied"); }
+};
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id === 'archive') fetchArchive();
 }
 
-/* ── INIT ── */
-function initApp(){
-  loadData().then(function(result){
-    window._adminAW = result.list;
-    renderList(result.list,'all');
-  }).catch(function(){
-    document.getElementById('awList').innerHTML =
-      '<div class="list-empty"><div class="empty-icon">⚠️</div>'
-      +'<p>Could not load artworks.<br>Check your GitHub token in Settings.</p></div>';
-  });
+function preview(input, imgId, textId) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.getElementById(imgId);
+      img.src = e.target.result;
+      img.style.display = 'block';
+      if(textId) document.getElementById(textId).style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
-})();
+function saveToken() {
+  const t = document.getElementById('ghToken').value;
+  localStorage.setItem('st117_token', t);
+  githubToken = t;
+  notify("Access Token Saved", "ok");
+  fetchArchive();
+}
+
+async function fetchArchive() {
+  if(!githubToken) return;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_PATH}`, {
+      headers: { 'Authorization': `token ${githubToken}` }
+    });
+    if(!res.ok) throw new Error();
+    const data = await res.json();
+    const works = JSON.parse(atob(data.content));
+    const list = document.getElementById('archiveList');
+    
+    // Reverse so latest is first
+    const displayWorks = [...works].reverse();
+    
+    list.innerHTML = displayWorks.map((w, i) => {
+        const actualIdx = works.length - 1 - i;
+        const imgSrc = w.image.startsWith('http') ? w.image : `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${w.image}`;
+        return `
+      <div class="archive-item">
+        <img src="${imgSrc}" class="archive-thumb" onerror="this.src='https://via.placeholder.com/50'">
+        <div class="archive-info">
+          <div style="font-weight:700;">${w.title}</div>
+          <div style="font-size:0.6rem; color:var(--ink-soft);">${w.type}</div>
+        </div>
+        <button class="btn-del" onclick="deleteWork(${actualIdx})">Delete</button>
+      </div>
+    `}).join('');
+  } catch(e) {
+    document.getElementById('archiveList').innerHTML = "<p style='color:var(--ink-soft)'>Archive file not yet initialized. Publish your first work.</p>";
+  }
+}
+
+async function deleteWork(index) {
+  if(!confirm("Are you sure you want to remove this artwork?")) return;
+  notify("Removing...", "ok");
+  
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_PATH}`, {
+      headers: { 'Authorization': `token ${githubToken}` }
+    });
+    const jsonContent = await res.json();
+    let works = JSON.parse(atob(jsonContent.content));
+    const sha = jsonContent.sha;
+
+    works.splice(index, 1);
+
+    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_PATH}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${githubToken}` },
+        body: JSON.stringify({
+          message: `Delete artwork at index ${index}`,
+          content: btoa(JSON.stringify(works, null, 2)),
+          sha: sha
+        })
+    });
+    
+    notify("Deleted Successfully", "ok");
+    fetchArchive();
+  } catch(e) {
+    notify("Delete failed", "err");
+  }
+}
+
+document.getElementById('publishBtn').onclick = async () => {
+  if(!githubToken) return notify("Token Missing", "err");
+  
+  const title = document.getElementById('artTitle').value;
+  const type = document.getElementById('artType').value;
+  const year = document.getElementById('artYear').value;
+  const file = document.getElementById('artworkFile').files[0];
+
+  if(!title || !file) return notify("Missing Info", "err");
+
+  const btn = document.getElementById('publishBtn');
+  btn.innerText = "Deploying..."; btn.disabled = true;
+
+  try {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const imgBase64 = reader.result.split(',')[1];
+      const fileName = `art-${Date.now()}.jpg`;
+      const imgPath = `assets/portfolio/${fileName}`;
+
+      // 1. Upload Image to GitHub
+      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${imgPath}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${githubToken}` },
+        body: JSON.stringify({ message: `Upload ${title}`, content: imgBase64 })
+      });
+
+      // 2. Fetch and Update artworks.json
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_PATH}`, {
+        headers: { 'Authorization': `token ${githubToken}` }
+      });
+      
+      let works = [];
+      let sha = null;
+      if(res.ok) {
+        const jsonContent = await res.json();
+        works = JSON.parse(atob(jsonContent.content));
+        sha = jsonContent.sha;
+      }
+
+      works.push({ title, type, year, image: imgPath });
+
+      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_PATH}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${githubToken}` },
+        body: JSON.stringify({
+          message: `Add ${title} to archive`,
+          content: btoa(JSON.stringify(works, null, 2)),
+          sha: sha
+        })
+      });
+
+      notify("Successfully Deployed", "ok");
+      // Reset form
+      document.getElementById('artTitle').value = "";
+      document.getElementById('artworkFile').value = null;
+      document.getElementById('artworkPreview').style.display = 'none';
+      document.getElementById('uploadText').style.display = 'block';
+      btn.innerText = "Confirm & Deploy"; btn.disabled = false;
+      fetchArchive();
+    };
+  } catch(e) {
+    notify("Deploy Failed", "err");
+    btn.disabled = false;
+  }
+};
+
+function notify(txt, cls) {
+  const m = document.getElementById('statusMsg');
+  m.innerText = txt; m.className = cls; m.style.display = 'block';
+  setTimeout(() => m.style.display='none', 3000);
+}
 </script>
 </body>
 </html>
