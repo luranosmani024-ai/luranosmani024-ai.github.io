@@ -2,8 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>ST117 — Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>ST117 — Visual Art Studio | North Macedonia</title>
+<meta name="description" content="ST117 is a visual art studio from North Macedonia, working across painting, drawing, photography and printmaking. Original works available for commission and purchase."/>
+<meta name="keywords" content="ST117, visual art, studio, painting, printmaking, photography, drawings, North Macedonia, Albanian art, fine art, commission"/>
+<meta name="author" content="ST117 Studio"/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://luranosmani024-ai.github.io/"/>
+<!-- Open Graph / Facebook / WhatsApp -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://luranosmani024-ai.github.io/"/>
+<meta property="og:title" content="ST117 — Visual Art Studio"/>
+<meta property="og:description" content="Original paintings, drawings, photography and printmaking from North Macedonia. Commission a piece or explore the collection."/>
+<meta property="og:image" content="https://luranosmani024-ai.github.io/images/og-cover.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:site_name" content="ST117 Studio"/>
+<meta property="og:locale" content="en_US"/>
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="ST117 — Visual Art Studio"/>
+<meta name="twitter:description" content="Original paintings, drawings, photography and printmaking from North Macedonia."/>
+<meta name="twitter:image" content="https://luranosmani024-ai.github.io/images/og-cover.jpg"/>
+<!-- Theme color (browser chrome on mobile) -->
+<meta name="theme-color" content="#08080a"/>
+<meta name="theme-color" content="#fdfcfb" media="(prefers-color-scheme:light)"/>
+<!-- Structured data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ArtGallery","name":"ST117 Studio","description":"Visual art studio working across painting, drawing, photography and printmaking.","url":"https://luranosmani024-ai.github.io/","address":{"@type":"PostalAddress","addressCountry":"MK"},"sameAs":["https://www.instagram.com/print_117"]}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&family=Inter:wght@900&display=swap" rel="stylesheet"/>
@@ -24,9 +51,18 @@
   --glass:rgba(255,255,255,.88);--glass-bdr:rgba(0,0,0,.07);--glass-top:rgba(255,255,255,.98);
 }
 html{scroll-behavior:smooth;}
+@media(max-width:768px){html{scroll-behavior:auto;}}
 body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
   overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
   transition:background .6s ease,color .6s ease;}
+/* force GPU composite layer on all animated elements */
+.feed-card,.home-feat-card,.cm-item,.nav-btn,.sub-chip,.g-tab,.lb-arr,.ig-cta-btn,.artist-photo-box{
+  transform:translateZ(0); /* promote to own layer */
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
 .bf{font-family:'Inter',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.05em;}
 
 /* ── 120HZ CURSOR — uses transform only, no layout, pure GPU ── */
@@ -38,9 +74,8 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
 #cur-ring{position:fixed;top:0;left:0;width:36px;height:36px;
   border:1.5px solid rgba(200,16,46,.4);border-radius:50%;
   pointer-events:none;z-index:99998;
-  will-change:transform;transform:translate(-50%,-50%);
-  transition:width .25s var(--ease),height .25s var(--ease),border-color .25s;}
-body.cur-link #cur-ring{width:52px;height:52px;border-color:rgba(200,16,46,.6);}
+  will-change:transform;transform:translate(-50%,-50%);}
+/* ring size is controlled purely via JS — no CSS transitions that cause lag */
 body.cur-link #cur{background:var(--red-h);}
 
 /* ── INTRO ── */
@@ -208,51 +243,103 @@ body.cur-link #cur{background:var(--red-h);}
 .scroll-lbl{font-size:.5rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);opacity:.5;}
 .scroll-arr{color:var(--ink-soft);opacity:.5;font-size:1rem;line-height:1;}
 
-/* ── FEATURED LANDSCAPE CARDS — stacked horizontal below brand ── */
+/* ── FEATURED LANDSCAPE — bigger ── */
 .home-right{
-  display:flex;flex-direction:column;gap:8px;
-  width:min(820px,88vw);
+  display:flex;flex-direction:column;gap:10px;
+  width:min(900px,92vw);
   position:relative;z-index:1;
   opacity:0;animation:fadeIn .9s 3s ease forwards;
 }
 .home-feat-card{
   position:relative;overflow:hidden;cursor:pointer;
   background:var(--bg3);
-  border-radius:var(--rad-btn);
-  /* landscape: wide and short */
-  height:clamp(100px, 14vw, 180px);
+  border-radius:var(--rad);
+  height:clamp(130px,17vw,220px);   /* ← bigger */
   flex-shrink:0;
-  border:1px solid rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.07);
   transition:border-color .35s,transform .5s var(--ease);
 }
-.home-feat-card:hover{border-color:rgba(200,16,46,.3);transform:scaleX(1.008);}
-.home-feat-card img{
-  width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform .8s var(--ease);
-}
-.home-feat-card:hover img{transform:scale(1.04);}
+.home-feat-card:hover{border-color:rgba(200,16,46,.35);transform:scale(1.012);}
+.home-feat-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s var(--ease);}
+.home-feat-card:hover img{transform:scale(1.05);}
 .home-feat-ov{
   position:absolute;inset:0;
-  background:linear-gradient(to right,rgba(0,0,0,.82) 0%,rgba(0,0,0,.3) 45%,transparent 100%);
+  background:linear-gradient(to right,rgba(0,0,0,.88) 0%,rgba(0,0,0,.35) 40%,transparent 100%);
   display:flex;flex-direction:column;justify-content:center;
-  padding:1.4rem 1.8rem;
+  padding:1.6rem 2.2rem;
   opacity:0;transition:opacity .32s;
 }
 .home-feat-card:hover .home-feat-ov{opacity:1;}
-@media(pointer:coarse){.home-feat-ov{opacity:1;background:linear-gradient(to right,rgba(0,0,0,.75) 0%,rgba(0,0,0,.2) 55%,transparent 100%);}}
-.hf-label{font-size:.44rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--red);margin-bottom:.35rem;}
+@media(pointer:coarse){.home-feat-ov{opacity:1;background:linear-gradient(to right,rgba(0,0,0,.78) 0%,rgba(0,0,0,.2) 55%,transparent 100%);}}
+.hf-label{font-size:.44rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
 .hf-title{font-family:'DM Serif Display',serif;font-style:italic;
-  font-size:clamp(.9rem,2vw,1.3rem);color:#fff;line-height:1.2;margin-bottom:.25rem;}
-.hf-meta{font-size:.46rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(255,255,255,.38);}
-.hf-price{font-size:.72rem;font-weight:700;color:var(--red);margin-top:.2rem;}
-/* placeholder */
+  font-size:clamp(1rem,2.2vw,1.5rem);color:#fff;line-height:1.2;margin-bottom:.3rem;}
+.hf-meta{font-size:.48rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);}
+.hf-price{font-size:.78rem;font-weight:700;color:var(--red);margin-top:.25rem;}
 .hfc-ph{width:100%;height:100%;display:flex;flex-direction:row;
-  align-items:center;justify-content:center;gap:1rem;padding:1.2rem 1.8rem;
-  background:var(--bg3);}
-.hfc-ph-icon{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.8rem;opacity:.07;}
-.hfc-ph-txt{font-size:.48rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);}
+  align-items:center;justify-content:center;gap:1rem;padding:1.2rem 1.8rem;background:var(--bg3);}
+.hfc-ph-icon{font-family:'DM Serif Display',serif;font-style:italic;font-size:2rem;opacity:.07;}
+.hfc-ph-txt{font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);}
+
+/* ── INSTAGRAM CTA ── */
+.ig-cta{margin-bottom:2.5rem;}
+.ig-cta-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:2rem;flex-wrap:wrap;
+  background:var(--bg2);
+  border:1px solid var(--glass-bdr);
+  border-radius:var(--rad);
+  padding:2rem 2.4rem;
+  position:relative;overflow:hidden;
+}
+/* red left accent bar */
+.ig-cta-inner::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--red);
+  box-shadow:0 0 18px rgba(200,16,46,.5);
+}
+.ig-cta-label{
+  font-size:.54rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--red);opacity:.8;display:block;margin-bottom:.4rem;
+}
+.ig-cta-title{
+  font-family:'DM Serif Display',serif;font-style:italic;
+  font-size:clamp(1.4rem,3vw,2rem);color:var(--ink);margin-bottom:.4rem;line-height:1;
+}
+.ig-cta-sub{font-size:.82rem;color:var(--ink-mid);line-height:1.6;}
+.ig-cta-btn{
+  display:inline-flex;align-items:center;gap:.7rem;
+  padding:.9rem 1.8rem;
+  border-radius:var(--rad-btn);
+  background:var(--ink);color:var(--bg);
+  font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.18em;
+  text-decoration:none;
+  white-space:nowrap;flex-shrink:0;
+  position:relative;overflow:hidden;
+  transition:background .3s var(--ease),transform .25s var(--ease),box-shadow .25s;
+}
+.ig-icon{width:18px;height:18px;flex-shrink:0;}
+.ig-cta-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);
+  transform:translateX(-120%);transition:transform .55s var(--ease);
+}
+.ig-cta-btn:hover::before{transform:translateX(120%);}
+.ig-cta-btn:hover{background:var(--red);color:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,16,46,.3);}
+
+/* divider between IG and form */
+.contact-divider{
+  display:flex;align-items:center;gap:1.2rem;
+  margin-bottom:2.5rem;
+}
+.contact-divider::before,.contact-divider::after{
+  content:'';flex:1;height:1px;background:var(--glass-bdr);
+}
+.contact-divider span{
+  font-size:.54rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-soft);white-space:nowrap;
+}
 
 /* ── SMALL ST117 BRAND — bottom left corner ── */
 .home-corner-brand{
@@ -722,40 +809,47 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
 @media(max-width:1024px) and (min-width:769px){
   .sec{padding:7rem 5vw;}
   .hero-title{font-size:clamp(5rem,14vw,12rem);}
-  .home-right{width:min(680px,90vw);}
-  .home-feat-card{height:clamp(110px,13vw,160px);}
+  .home-right{width:min(760px,92vw);}
+  .home-feat-card{height:clamp(130px,16vw,200px);}
   .feed{columns:2;}
   .cm-grid{columns:2;}
   .bio-grid{grid-template-columns:1fr 1fr;gap:3.5rem;}
   .practice-grid{gap:2rem 3rem;}
   .contact-grid{gap:2.5rem;}
+  .ig-cta-inner{padding:1.6rem 2rem;}
 }
 
-/* ── MOBILE LARGE (640-768) ── */
+/* ── MOBILE LARGE (≤768px) ── */
 @media(max-width:768px){
-  /* Nav — tighter */
+  /* Safe area insets for notched phones */
+  body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
+  footer{padding-bottom:calc(3rem + env(safe-area-inset-bottom));}
+
+  /* Nav */
   .nav-container{padding:1rem 4vw;}
   .nav-btn{padding:.6rem 1rem;font-size:.6rem;letter-spacing:.12em;}
   #mainNav{padding:.3rem;}
   #darkToggle{width:38px;height:38px;}
 
-  /* Hero */
+  /* Hero — stack vertically, centred */
+  #home{padding-top:4rem;}
   .hero-title{font-size:clamp(4.5rem,20vw,9rem);margin-bottom:1rem;}
-  .home-eyebrow{margin-bottom:1.2rem;}
+  .home-eyebrow{margin-bottom:1.2rem;font-size:.52rem;}
   .hero-sub{margin-bottom:2rem;letter-spacing:.4em;}
-  .scroll-hint{margin-bottom:2.5rem;}
-  .home-right{width:94vw;gap:7px;}
-  .home-feat-card{height:clamp(90px,18vw,140px);}
+  .scroll-hint{margin-bottom:2rem;}
+  .home-right{width:96vw;gap:7px;}
+  .home-feat-card{height:clamp(110px,22vw,170px);}
   .home-corner-brand{bottom:1.2rem;left:1.4rem;}
   .hcb-logo{font-size:.88rem;}
 
   /* Gallery */
   .sec{padding:5rem 5vw;}
   .sec-title{font-size:clamp(2.2rem,9vw,3.8rem);margin-bottom:3.5rem;}
-  .gallery-nav{gap:1.2rem;margin-bottom:3rem;}
-  .liquid-tabs{width:100%;border-radius:var(--rad);}
-  .g-tab{flex:1;padding:.72rem .6rem;font-size:.58rem;letter-spacing:.1em;text-align:center;}
-  .sub-chips{gap:.35rem;max-width:100%;}
+  .gallery-nav{gap:1.2rem;margin-bottom:3rem;align-items:stretch;}
+  .liquid-tabs{width:100%;border-radius:var(--rad);display:flex;}
+  .g-tab{flex:1;padding:.75rem .5rem;font-size:.58rem;letter-spacing:.09em;text-align:center;}
+  .tab-ind{border-radius:calc(var(--rad-btn) - 1px);}
+  .sub-chips{gap:.35rem;max-width:100%;justify-content:flex-start;} /* left-align on mobile so they flow naturally */
   .sub-chip{padding:.44rem .95rem;font-size:.6rem;letter-spacing:.08em;}
   .cat-title{font-size:clamp(1.5rem,6vw,2rem);}
   .feed{columns:2;column-gap:.7rem;}
@@ -768,11 +862,17 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
 
   /* Lightbox */
   .lb-top{padding:.9rem 1.2rem;}
-  .lb-stage{padding:1.2rem 3rem;}
+  .lb-stage{padding:1.2rem 3.2rem;}
   .lb-arr{width:38px;height:38px;font-size:.95rem;}
   .lb-prev{left:.5rem;}.lb-next{right:.5rem;}
-  .lb-info{padding:1rem 1.2rem;gap:.6rem;}
+  .lb-info{padding:1rem 1.2rem;gap:.6rem;grid-template-columns:1fr;}
   .lb-title-big{font-size:1.1rem;}
+  .lb-dots{justify-content:center;}
+
+  /* Instagram CTA */
+  .ig-cta-inner{flex-direction:column;align-items:flex-start;gap:1.4rem;padding:1.4rem 1.6rem;}
+  .ig-cta-btn{width:100%;justify-content:center;}
+  .ig-cta-title{font-size:clamp(1.3rem,5vw,1.8rem);}
 
   /* Artists */
   .bio-grid{grid-template-columns:1fr;gap:3.5rem;}
@@ -787,58 +887,63 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
   footer{padding:5rem 5vw 3rem;gap:2.5rem;}
 }
 
-/* ── MOBILE SMALL (max 540px) ── */
+/* ── MOBILE SMALL (≤540px) ── */
 @media(max-width:540px){
-  /* Nav: hide some text to save space */
-  .nav-btn{padding:.58rem .8rem;font-size:.54rem;letter-spacing:.08em;}
+  /* Nav: compact */
+  .nav-btn{padding:.58rem .75rem;font-size:.54rem;letter-spacing:.08em;}
   #darkToggle{width:34px;height:34px;}
 
   /* Hero */
-  .hero-title{font-size:clamp(4rem,22vw,8rem);}
-  .home-eyebrow{font-size:.5rem;letter-spacing:.3em;}
-  .hero-sub{font-size:.54rem;letter-spacing:.35em;}
-  .home-right{width:96vw;gap:5px;}
-  .home-feat-card{height:clamp(80px,22vw,120px);}
+  #home{padding-top:3.5rem;}
+  .hero-title{font-size:clamp(3.8rem,23vw,8rem);}
+  .home-eyebrow{font-size:.48rem;letter-spacing:.28em;}
+  .hero-sub{font-size:.54rem;letter-spacing:.32em;}
+  .home-right{width:98vw;gap:6px;}
+  .home-feat-card{height:clamp(100px,26vw,155px);}
+  .hf-title{font-size:clamp(.88rem,3vw,1.1rem);}
   .home-corner-brand{bottom:1rem;left:1rem;}
   .hcb-logo{font-size:.78rem;}
   .hcb-tagline{display:none;}
 
-  /* Gallery — single column feed on smallest screens */
+  /* Gallery — single column on tiny screens */
   .feed{columns:1;}
   .feed-card{margin-bottom:.8rem;}
   .sub-chip{padding:.42rem .85rem;font-size:.56rem;}
   .sec{padding:4.5rem 5vw;}
   .sec-title{font-size:clamp(2rem,11vw,3rem);margin-bottom:3rem;}
   .gallery-nav{margin-bottom:2.5rem;}
+  .g-tab{padding:.7rem .4rem;font-size:.52rem;}
 
-  /* Lightbox — full edge to edge on tiny screens */
+  /* Lightbox — edge to edge */
   .lb-stage{padding:1rem 2.8rem;}
   .lb-info{grid-template-columns:1fr;}
-  .lb-dots{justify-content:center;}
+  .lb-title-big{font-size:1rem;}
 
   /* Artists */
-  .artist-photo-box{max-width:240px;}
+  .artist-photo-box{max-width:220px;}
   .artist-bio{font-size:.86rem;}
 
   /* Contact */
   .btn-submit{width:100%;text-align:center;padding:1.1rem;}
+  .contact-divider span{display:none;}/* just show the lines */
+  .ig-cta-sub{display:none;}/* keep it tight on small screens */
 
   /* Footer */
   .footer-brand{font-size:clamp(2rem,13vw,4rem);}
   .footer-links{gap:1.5rem;}
 }
 
-/* ── touch: always show feed overlay ── */
+/* ── TOUCH: always visible overlays + bigger tap targets ── */
 @media(pointer:coarse){
   .feed-ov{
     opacity:1;
     background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.05) 52%,transparent 100%);
   }
-  /* bigger tap targets for sub-chips */
-  .sub-chip{padding:.56rem 1.1rem;min-height:40px;}
+  .sub-chip{padding:.56rem 1.1rem;min-height:42px;display:inline-flex;align-items:center;}
   .g-tab{min-height:44px;}
-  .see-all-btn{min-height:42px;}
+  .see-all-btn{min-height:44px;}
   .nav-btn{min-height:40px;}
+  .ig-cta-btn{min-height:48px;}
 }
 </style>
 </head>
@@ -1012,7 +1117,34 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
 <!-- CONTACT -->
 <section id="contact" class="sec">
   <div class="sec-inner">
-    <h2 class="sec-title reveal" style="text-align:left;">Inquiry <em>Portal.</em></h2>
+    <h2 class="sec-title reveal" style="text-align:left;">Get in <em>Touch.</em></h2>
+
+    <!-- Instagram CTA — primary contact method -->
+    <div class="ig-cta reveal">
+      <div class="ig-cta-inner">
+        <div class="ig-cta-left">
+          <span class="ig-cta-label">Follow the Studio</span>
+          <h3 class="ig-cta-title">@print_117</h3>
+          <p class="ig-cta-sub">DMs open for commissions, inquiries and collaborations.</p>
+        </div>
+        <a class="ig-cta-btn"
+           href="https://www.instagram.com/print_117?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+           target="_blank" rel="noopener noreferrer" aria-label="Visit ST117 on Instagram">
+          <svg class="ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="5.5" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+          </svg>
+          <span>Open Instagram</span>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M11 1L6 6M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-divider reveal">
+      <span>or leave a message</span>
+    </div>
+
     <div id="cformWrap" class="reveal">
       <div class="contact-grid">
         <input class="cf-field" type="text" id="cN" placeholder="Full Name" autocomplete="name"/>
@@ -1024,10 +1156,10 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
         </select>
         <textarea class="cf-field cf-area cf-span" id="cM" placeholder="Tell us about your inquiry…"></textarea>
       </div>
-      <button class="btn-submit" onclick="sendMsg()">Send Inquiry</button>
+      <button class="btn-submit" onclick="sendMsg()">Send Message</button>
     </div>
     <div class="f-ok" id="fOk">
-      <div class="f-ok-icon">✦</div><h3>Inquiry Sent</h3>
+      <div class="f-ok-icon">✦</div><h3>Message Sent</h3>
       <p>Thank you — we'll reply within 48 hours.</p>
     </div>
   </div>
@@ -1036,9 +1168,8 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
 <footer>
   <div class="footer-brand bf">ST117</div>
   <div class="footer-links">
+    <a class="footer-link" href="https://www.instagram.com/print_117?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">Instagram</a>
     <a class="footer-link" href="mailto:contact@st117.studio">Email</a>
-    <a class="footer-link" href="#" target="_blank">Instagram</a>
-    <a class="footer-link" href="#" target="_blank">Behance</a>
   </div>
   <div class="footer-copy">&copy; 2026 ST117. All rights reserved.<br>North Macedonia &nbsp;·&nbsp; Visual Art Studio</div>
 </footer>
@@ -1075,7 +1206,7 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){
 'use strict';
 
@@ -1119,31 +1250,52 @@ document.getElementById('darkToggle').addEventListener('click',function(){
   setTimeout(updateTabInd,60);
 });
 
-/* ── 120HZ CURSOR — RAF-based, no transitions ── */
+/* ── TRUE 120HZ CURSOR — zero lag, pure GPU, no CSS transitions on ring ── */
 if(window.matchMedia('(pointer:fine)').matches){
   var cur=document.getElementById('cur');
   var ring=document.getElementById('cur-ring');
+  /* current real mouse pos — updated immediately on event */
   var mx=window.innerWidth/2, my=window.innerHeight/2;
-  var rx=mx, ry=my;  /* ring lags behind */
-  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;},{passive:true});
-  var lastT=0;
-  (function raf(t){
-    requestAnimationFrame(raf);
-    /* lerp ring at 120hz — factor tuned so it feels instant but smooth */
-    var dt=Math.min((t-lastT)/16.67,3); lastT=t;
-    var f=1-Math.pow(0.04,dt); /* ~0.75 per frame at 60hz, faster at 120hz */
-    rx+=(mx-rx)*f; ry+=(my-ry)*f;
+  /* ring interpolated pos */
+  var rx=mx, ry=my;
+  /* ring size target — interpolated separately so no CSS transition needed */
+  var rw=36, rh=36, rBig=false;
+  var curW=36, curH=36; /* interpolated ring dimensions */
+  
+  document.addEventListener('mousemove',function(e){
+    mx=e.clientX; my=e.clientY;
+  },{passive:true});
+
+  var _lastT=performance.now();
+  function rafLoop(t){
+    var dt=Math.min((t-_lastT)/16.667,4); _lastT=t;
+    /* exponential decay lerp — frame-rate independent */
+    /* DOT: snaps to cursor instantly — zero lag */
     cur.style.transform='translate3d('+mx+'px,'+my+'px,0) translate(-50%,-50%)';
+    /* RING: smooth follow with slight lag for elegance */
+    var rf=1-Math.pow(0.12,dt);  /* ~0.6 at 60hz, ~0.76 at 120hz */
+    rx+=(mx-rx)*rf; ry+=(my-ry)*rf;
+    /* RING SIZE: interpolate without CSS transition */
+    var targetW=rBig?52:36;
+    var sf=1-Math.pow(0.08,dt);
+    curW+=(targetW-curW)*sf; curH=curW;
+    /* write all in one frame */
     ring.style.transform='translate3d('+rx+'px,'+ry+'px,0) translate(-50%,-50%)';
-  })(0);
-  /* hover states */
+    ring.style.width=curW+'px';
+    ring.style.height=curH+'px';
+    ring.style.borderColor=rBig?'rgba(200,16,46,.65)':'rgba(200,16,46,.4)';
+    requestAnimationFrame(rafLoop);
+  }
+  requestAnimationFrame(rafLoop);
+
+  /* hover — toggle rBig flag, ring size lerped in rAF */
   function addHov(sel){
     document.querySelectorAll(sel).forEach(function(el){
-      el.addEventListener('mouseenter',function(){document.body.classList.add('cur-link');});
-      el.addEventListener('mouseleave',function(){document.body.classList.remove('cur-link');});
+      el.addEventListener('mouseenter',function(){rBig=true;document.body.classList.add('cur-link');});
+      el.addEventListener('mouseleave',function(){rBig=false;document.body.classList.remove('cur-link');});
     });
   }
-  addHov('a,button,.feed-card,.cm-item,.featured-card,.g-tab,.sub-chip,.a-tag,.footer-link');
+  addHov('a,button,.feed-card,.cm-item,.featured-card,.g-tab,.sub-chip,.a-tag,.footer-link,.home-feat-card,.ig-cta-btn,.lb-arr');
 }
 
 /* ── NAV ── */
@@ -1276,7 +1428,7 @@ function renderFeatured(aw){
     }
     var meta=[a.type,a.year].filter(Boolean).join(' · ');
     card.innerHTML=''
-      +'<img src="'+rawStable(a.image)+'" alt="'+esc(a.title)+'" loading="lazy"/>'
+      +'<img src="'+rawStable(a.image)+'" alt="'+esc(a.title)+'" loading="lazy" decoding="async"/>'
       +'<div class="home-feat-ov">'
       +'<div class="hf-label">Featured</div>'
       +'<div class="hf-title">'+esc(a.title)+'</div>'
@@ -1299,7 +1451,7 @@ function renderFeed(container,list,catId,sub){
   list.forEach(function(a,i){
     var meta=[a.subcategory||a.type,a.year].filter(Boolean).join(' · ');
     html+='<div class="feed-card" data-idx="'+i+'" style="transition-delay:'+(i*.055)+'s">'
-      +'<img src="'+rawStable(a.image)+'" alt="'+esc(a.title)+'" loading="lazy"/>'
+      +'<img src="'+rawStable(a.image)+'" alt="'+esc(a.title)+'" loading="lazy" decoding="async"/>'
       +'<div class="feed-ov">'
       +'<div class="feed-title">'+esc(a.title)+'</div>'
       +(meta?'<div class="feed-meta">'+esc(meta)+'</div>':'')
@@ -1365,7 +1517,7 @@ function renderCatGrid(){
   grid.innerHTML=list.map(function(a,i){
     var meta=[a.subcategory||a.type,a.year].filter(Boolean).join(' · ');
     return'<div class="cm-item" data-idx="'+i+'">'
-      +'<img src="'+rawStable(a.image)+'" alt="'+esc(a.title)+'" loading="lazy"/>'
+      +'<img src="'+rawStable(a.image)+'" alt="'+esc(a.title)+'" loading="lazy" decoding="async"/>'
       +'<div class="cm-item-ov">'
       +'<div class="cm-t">'+esc(a.title)+'</div>'
       +(meta?'<div class="cm-m">'+esc(meta)+'</div>':'')
