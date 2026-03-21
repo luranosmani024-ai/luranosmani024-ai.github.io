@@ -910,8 +910,9 @@ body.cur-link #cur{background:var(--red-h);}
   border:1px solid var(--glass-bdr);
   transition:color .22s,border-color .22s,transform .22s var(--ease);cursor:default;}
 .a-tag:hover{border-color:rgba(123,158,184,.35);color:var(--slate);transform:translateY(-2px);}
-.practice-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem 4.5rem;margin-top:1rem;}
-@media(max-width:600px){.practice-grid{grid-template-columns:1fr;gap:2rem;}}
+.practice-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5rem 3.5rem;margin-top:1rem;}
+@media(max-width:860px){.practice-grid{grid-template-columns:1fr 1fr;gap:2rem 3rem;}}
+@media(max-width:520px){.practice-grid{grid-template-columns:1fr;gap:1.8rem;}}
 .p-num{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
   color:var(--slate);opacity:.65;margin-bottom:.55rem;display:block;}
 .p-title{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.15rem;
@@ -1335,9 +1336,8 @@ footer{padding:7rem 5vw 3.5rem;border-top:1px solid var(--glass-bdr);
     <div class="thin-rule reveal"></div>
     <div class="practice-grid reveal">
       <div><span class="p-num">01</span><div class="p-title">The Practice</div><p class="p-text">Working across disciplines — each medium informs the others. A practice built on obsession, patience and the belief that art leaves marks history cannot erase.</p></div>
-      <div><span class="p-num">02</span><div class="p-title">Albanian Roots</div><p class="p-text">Inspired by Skanderbeg, the eagle of Illyria, the mountains of Shqipëria. Heritage is not nostalgia. It is fuel.</p></div>
-      <div><span class="p-num">03</span><div class="p-title">The Print</div><p class="p-text">Printmaking as resistance. Every plate, every pull, every layer is deliberate. The print does not apologize for its mark.</p></div>
-      <div><span class="p-num">04</span><div class="p-title">Commissions</div><p class="p-text">Open to commissions and collaborations. Historical pieces, portraits, or something entirely new — reach out and let's make something that lasts.</p></div>
+      <div><span class="p-num">02</span><div class="p-title">The Print</div><p class="p-text">Printmaking as resistance. Every plate, every pull, every layer is deliberate. The print does not apologize for its mark.</p></div>
+      <div><span class="p-num">03</span><div class="p-title">Commissions</div><p class="p-text">Open to commissions and collaborations. Historical pieces, portraits, or something entirely new — reach out and let's make something that lasts.</p></div>
     </div>
   </div>
 </section>
@@ -1461,7 +1461,7 @@ var cntEl=document.getElementById('introCount');
 var cv=0;
 var cTimer=setInterval(function(){
   cv=Math.min(cv+Math.floor(Math.random()*16)+7,100);
-  cntEl.textContent=String(cv).padStart(2,'0');
+  if(cntEl)cntEl.textContent=String(cv).padStart(2,'0');
   if(cv>=100)clearInterval(cTimer);
 },52);
 setTimeout(function(){
@@ -1561,11 +1561,11 @@ var _drawerLogo=document.getElementById('drawerLogoLink');
 if(_drawerLogo) _drawerLogo.addEventListener('click',closeDrawer);
 
 function scrollToSec(secId){
+  var wasOpen=drawerOpen;
   closeDrawer();
   var sec=document.getElementById(secId);
   if(sec){
-    /* tiny delay so drawer closes first on mobile */
-    setTimeout(function(){sec.scrollIntoView({behavior:'smooth'});},drawerOpen?0:80);
+    setTimeout(function(){sec.scrollIntoView({behavior:'smooth'});},wasOpen?320:0);
   }
 }
 
@@ -1769,6 +1769,7 @@ function renderFeed(container,list,catId,sub){
   });
   container.innerHTML=html;
   /* stagger entrance */
+  /* stagger entrance with fallback for old WebView */
   var obs=new IntersectionObserver(function(entries){
     if(entries[0].isIntersecting){
       container.querySelectorAll('.feed-card').forEach(function(c,i){
@@ -1776,8 +1777,14 @@ function renderFeed(container,list,catId,sub){
       });
       obs.disconnect();
     }
-  },{threshold:.04});
+  },{threshold:0,rootMargin:'0px 0px -20px 0px'});
   obs.observe(container);
+  /* fallback */
+  setTimeout(function(){
+    container.querySelectorAll('.feed-card').forEach(function(c,i){
+      setTimeout(function(){c.classList.add('fc-in');},i*40);
+    });
+  },1200);
   /* click → lightbox */
   container.querySelectorAll('.feed-card').forEach(function(card){
     card.addEventListener('click',function(){openLb(list,parseInt(card.dataset.idx,10));});
