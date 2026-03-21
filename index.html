@@ -1988,7 +1988,7 @@ function renderRecent(aw){
   var sorted=aw.slice().sort(function(a,b){
     return new Date(b.date||0)-new Date(a.date||0);
   });
-  var recent=sorted.slice(0,8);
+  var recent=sorted.slice(0,4);
   if(countEl) countEl.textContent=recent.length+' work'+(recent.length!==1?'s':'');
 
   /* build cards */
