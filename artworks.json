@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": 1774093379753,
+    "image": "images/test-1774093377749.jpg",
+    "title": "test",
+    "type": "Photography",
+    "subcategory": "Portrait",
+    "description": "test",
+    "size": "",
+    "year": "",
+    "price": "",
+    "featured": false,
+    "date": "2026-03-21T11:42:59.753Z"
+  }
+]
