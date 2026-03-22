@@ -126,6 +126,7 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
 
 /* DROP ZONE */
 .drop-zone{border:2px dashed rgba(255,255,255,.1);border-radius:var(--rad);padding:2.5rem 1.5rem;
+  position:relative;/* needed for the overlaid file input */
   text-align:center;cursor:pointer;transition:border-color .25s,background .25s;background:var(--bg3);margin-bottom:1.3rem;}
 .drop-zone:hover,.drop-zone.over{border-color:var(--red);background:var(--red-a);}
 .drop-prev{width:100%;max-height:200px;object-fit:contain;display:none;margin-bottom:.7rem;border-radius:var(--rad-btn);}
@@ -527,9 +528,11 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
                 <span class="drop-fname" id="dropFname"></span>
                 <span class="drop-icon" id="dropIcon">🖼</span>
                 <div class="drop-main" id="dropMain">Drop image here</div>
-                <div class="drop-hint" id="dropHint">or <strong>click to browse</strong></div>
+                <div class="drop-hint" id="dropHint">or <strong>tap to browse</strong></div>
+                <!-- File input overlays the entire drop zone — works on all mobile browsers -->
+                <input type="file" id="fileInput" accept="image/*,image/jpeg,image/png,image/webp,image/heic"
+                  style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:10;font-size:16px;"/>
               </div>
-              <input type="file" id="fileInput" accept="image/*"/>
             </div>
           </div>
           <div>
@@ -598,13 +601,13 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
       <div class="panel" id="panel-featured">
         <div class="ph"><h1>Featured Works</h1><p>Choose exactly 2 artworks to spotlight on the homepage. Click a slot to pick from your published works.</p></div>
         <div class="feat-grid">
-          <div class="feat-slot" id="featSlot1" onclick="openPicker(1)">
+          <div class="feat-slot" id="featSlot1">
             <span class="feat-slot-lbl">Featured 1</span>
             <div class="feat-ph-icon">—</div>
             <div class="feat-ph-txt">Click to choose</div>
             <div class="feat-slot-ov"><div class="fs-title" id="feat1Title"></div><div class="fs-change">Click to change</div></div>
           </div>
-          <div class="feat-slot" id="featSlot2" onclick="openPicker(2)">
+          <div class="feat-slot" id="featSlot2">
             <span class="feat-slot-lbl">Featured 2</span>
             <div class="feat-ph-icon">—</div>
             <div class="feat-ph-txt">Click to choose</div>
@@ -738,7 +741,8 @@ function switchPanel(id){
 document.querySelectorAll('.nav-item').forEach(function(btn){
   btn.addEventListener('click', function(){
     switchPanel(btn.dataset.panel);
-    if(btn.dataset.panel==='works'&&window._aw){renderList(window._aw,activeLcat);}
+    if(btn.dataset.panel==='works'&&window._aw) renderList(window._aw,activeLcat);
+    if(btn.dataset.panel==='featured') renderFeatSlots();
   });
 });
 
@@ -867,10 +871,15 @@ document.getElementById('fType').addEventListener('change', function(){
 /* ── DROP ZONE ── */
 var pendingFile = null;
 var dz = document.getElementById('dropZone'); var fi = document.getElementById('fileInput');
-dz.addEventListener('click', function(){ fi.click(); });
+/* drag-and-drop (desktop) */
 dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.classList.add('over'); });
 dz.addEventListener('dragleave', function(){ dz.classList.remove('over'); });
-dz.addEventListener('drop', function(e){ e.preventDefault(); dz.classList.remove('over'); var f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) loadPreview(f); });
+dz.addEventListener('drop', function(e){
+  e.preventDefault(); dz.classList.remove('over');
+  var f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')) loadPreview(f);
+});
+/* file input change — works for both tap (mobile) and desktop browse */
 fi.addEventListener('change', function(){ if(fi.files[0]) loadPreview(fi.files[0]); });
 function loadPreview(f){
   pendingFile=f;
@@ -1104,7 +1113,9 @@ function toggleFeatured(id){
     var body={message:'Toggle featured: '+a.title,content:content,branch:BRANCH}; if(sha)body.sha=sha;
     return ghFetch('PUT','artworks.json',body).then(function(){
       showStatus(a.featured?'★ Marked as featured':'Removed from featured','ok');
-      window._aw=list; renderList(list,activeLcat);
+      window._aw=list;
+      renderList(list,activeLcat);
+      renderFeatSlots(); /* keep featured panel in sync */
     });
   }).catch(function(err){showStatus('✗ '+err.message,'err');});
 }
@@ -1137,6 +1148,14 @@ function deleteWork(id){
 /* ── FEATURED PICKER ── */
 var pickerSlot = 1;
 var featuredIds = {1: null, 2: null};
+/* feat slot tap/click — addEventListener is more reliable than onclick on mobile */
+document.addEventListener('DOMContentLoaded',function(){});/* noop — already at bottom of body */
+(function(){
+  var s1=document.getElementById('featSlot1');
+  var s2=document.getElementById('featSlot2');
+  if(s1) s1.addEventListener('click',function(){ openPicker(1); });
+  if(s2) s2.addEventListener('click',function(){ openPicker(2); });
+})();
 
 function loadFeaturedPanel(){
   /* load saved featured IDs from localStorage */
@@ -1171,8 +1190,25 @@ window.openPicker = function(slot){
   pickerSlot = slot;
   var list = window._aw||[];
   var grid = document.getElementById('pickerGrid');
-  if(!list.length){grid.innerHTML='<div class="pm-empty">No artworks published yet</div>';}
-  else{
+  document.getElementById('pickerModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(!list.length){
+    if(!ghToken){
+      grid.innerHTML='<div class="pm-empty">Save your GitHub token first, then reload.</div>';
+      return;
+    }
+    grid.innerHTML='<div class="pm-empty">Loading…</div>';
+    loadData().then(function(result){
+      window._aw=result.list;
+      renderList(result.list,activeLcat);
+      window.openPicker(slot); /* retry now that data is loaded */
+      document.getElementById('pickerModal').classList.remove('open'); /* will reopen from retry */
+    }).catch(function(){
+      grid.innerHTML='<div class="pm-empty">Could not load artworks — check token.</div>';
+    });
+    return;
+  }
+  if(true){
     grid.innerHTML=list.map(function(a){
       var meta=[a.type,a.year].filter(Boolean).join(' · ');
       return'<div class="pm-item" data-id="'+a.id+'">'
@@ -1189,8 +1225,6 @@ window.openPicker = function(slot){
       });
     });
   }
-  document.getElementById('pickerModal').classList.add('open');
-  document.body.style.overflow='hidden';
 };
 
 document.getElementById('pickerClose').addEventListener('click',function(){
@@ -1202,7 +1236,7 @@ document.getElementById('pickerClose').addEventListener('click',function(){
 document.getElementById('saveFeatBtn').addEventListener('click', function(){
   if(!ghToken){showStatus('Save your GitHub token first','err');return;}
   var id1=featuredIds[1], id2=featuredIds[2];
-  if(!id1||!id2){showStatus('Please choose 2 featured works','err');return;}
+  if(!id1&&!id2){showStatus('Choose at least 1 featured work first','err');return;}
   showStatus('Saving featured works…','loading');
   /* save IDs to localStorage so index can use them */
   localStorage.setItem('st117_featured', JSON.stringify(featuredIds));
@@ -1259,12 +1293,12 @@ document.getElementById('aPhoto2').addEventListener('change',function(){
 function initApp(){
   updateTokenStatus();
   loadArtistPanel();
+  loadFeaturedPanel(); /* ← was missing — now runs on start */
   loadData().then(function(result){
     window._aw=result.list;
     renderList(result.list,'all');
-    /* init featured panel data */
-    var saved=localStorage.getItem('st117_featured');
-    if(saved){try{featuredIds=JSON.parse(saved);}catch(e){}}
+    /* refresh featured slots now that artworks are loaded */
+    renderFeatSlots();
   }).catch(function(){
     document.getElementById('awList').innerHTML='<div class="list-empty"><div class="ei">⚠</div><p>Could not load artworks.<br>Check your GitHub Token.</p></div>';
   });
