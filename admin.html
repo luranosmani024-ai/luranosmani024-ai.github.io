@@ -702,10 +702,13 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
 'use strict';
 
 /* ── CONFIG ── */
-var OWNER = 'luranosmani024-ai';
-var REPO  = 'luranosmani024-ai.github.io';
+var OWNER = 'sitoshtyp-creator';
+var REPO  = 'sitoshtyp-creator.github.io';
 var BRANCH = 'main';
 var PASSWORD = 'Tetova357357';
+
+/* ── DEFAULT TOKEN — paste your ghp_ token here once, it will always be used ── */
+var DEFAULT_TOKEN = ''; /* <-- paste your token between these quotes */
 
 var CAT_MATCH = {
   paintings:   ['painting','paintings','mixed media','tempera'],
@@ -804,7 +807,12 @@ var _wt=document.getElementById('worksTabs'); (_wt?_wt.querySelectorAll('.w-tab'
 window.addEventListener('resize', function(){ if(document.getElementById('worksTabs')) refreshWInd(); }, {passive:true});
 
 /* ── GITHUB TOKEN ── */
-var ghToken = localStorage.getItem('st117_token') || '';
+/* ── GITHUB TOKEN — load from localStorage, fall back to DEFAULT_TOKEN ── */
+var ghToken = localStorage.getItem('st117_token') || DEFAULT_TOKEN || '';
+/* If DEFAULT_TOKEN is set and nothing in localStorage yet, save it automatically */
+if(DEFAULT_TOKEN && !localStorage.getItem('st117_token')){
+  localStorage.setItem('st117_token', DEFAULT_TOKEN);
+}
 if(ghToken){
   var _gti=document.getElementById('ghTokenInput');
   if(_gti) _gti.value=ghToken;
@@ -1388,4 +1396,3 @@ function initApp(){
 </script>
 </body>
 </html>
-
